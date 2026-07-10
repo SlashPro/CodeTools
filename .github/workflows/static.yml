@@ -33,11 +33,85 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Prepare Pages artifact
+        env:
+          PAGES_BASE: /${{ github.event.repository.name }}
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          rsync -a \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'dist' \
+            ./ dist/
+          touch dist/.nojekyll
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const root = path.join(process.cwd(), 'dist');
+          const base = process.env.PAGES_BASE || '';
+          const exts = new Set(['.html', '.js', '.css', '.json', '.webmanifest']);
+          const localPrefixes = ['zh-cn', 'en', '_astro', 'images', 'scripts', 'api', 'fonts'];
+          const localFiles = [
+            'favicon.ico',
+            'favicon-16x16.png',
+            'favicon-32x32.png',
+            'favicon-96x96.png',
+            'android-icon-192x192.png',
+            'ms-icon-144x144.png',
+            'manifest.json',
+            'sw.js',
+            'theme-init.js',
+            'DocumentLayout.C1MMuyFv.css',
+            'page.BbHDQgCD.js',
+          ];
+
+          function walk(dir, files = []) {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const file = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                walk(file, files);
+              } else if (exts.has(path.extname(entry.name))) {
+                files.push(file);
+              }
+            }
+            return files;
+          }
+
+          function escapeRegExp(value) {
+            return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          }
+
+          function prefixRootLocalPaths(input) {
+            let output = input;
+            for (const prefix of localPrefixes) {
+              output = output.replace(
+                new RegExp(`(?<![A-Za-z0-9])/(?=${prefix}(?:/|[?#'"\\\\)]|$))`, 'g'),
+                `${base}/`,
+              );
+            }
+            for (const file of localFiles) {
+              output = output.replace(
+                new RegExp(`(?<![A-Za-z0-9])/${escapeRegExp(file)}(?=([?#'"\\\\)]|$))`, 'g'),
+                `${base}/${file}`,
+              );
+            }
+            return output.replaceAll(`${base}${base}/`, `${base}/`);
+          }
+
+          for (const file of walk(root)) {
+            const before = fs.readFileSync(file, 'utf8');
+            const after = prefixRootLocalPaths(before);
+            if (after !== before) {
+              fs.writeFileSync(file, after);
+            }
+          }
+          NODE
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: 'dist'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
