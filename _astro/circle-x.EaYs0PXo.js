@@ -1,0 +1,1 @@
+import{k as c}from"./page-app-shell.OFOuSnPZ.js?dpl=dpl_GiT1tW2E2PLhuHB5v3hmbfNz5T6p";const a=[["circle",{cx:"12",cy:"12",r:"10",key:"1mglay"}],["path",{d:"m15 9-6 6",key:"1uzhvr"}],["path",{d:"m9 9 6 6",key:"z0biqf"}]],t=c("circle-x",a);export{t as C};

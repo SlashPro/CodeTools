@@ -1,0 +1,1 @@
+import{j as t}from"./page-app-shell.OFOuSnPZ.js?dpl=dpl_GiT1tW2E2PLhuHB5v3hmbfNz5T6p";function o({form:e,name:d,children:a}){return t.jsx(e.Field,{name:d,children:n=>a({value:n.state.value,errors:n.state.meta.errors,handleChange:r=>n.handleChange(r),handleBlur:()=>n.handleBlur()})})}export{o as F};

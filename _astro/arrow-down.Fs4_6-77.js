@@ -1,0 +1,1 @@
+import{k as n}from"./page-app-shell.OFOuSnPZ.js?dpl=dpl_GiT1tW2E2PLhuHB5v3hmbfNz5T6p";const o=[["path",{d:"M12 5v14",key:"s699le"}],["path",{d:"m19 12-7 7-7-7",key:"1idqje"}]],a=n("arrow-down",o);export{a as A};

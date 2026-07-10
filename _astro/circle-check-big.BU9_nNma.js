@@ -1,0 +1,1 @@
+import{k as n}from"./page-app-shell.OFOuSnPZ.js?dpl=dpl_GiT1tW2E2PLhuHB5v3hmbfNz5T6p";const t=[["path",{d:"M21.801 10A10 10 0 1 1 17 3.335",key:"yps3ct"}],["path",{d:"m9 11 3 3L22 4",key:"1pflzl"}]],o=n("circle-check-big",t);export{o as C};
