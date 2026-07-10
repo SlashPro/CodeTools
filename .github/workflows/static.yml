@@ -108,7 +108,16 @@ jobs:
             }
           }
 
-          const routePatchReplacement = `const P0=${JSON.stringify(base)};function B0(e){return P0&&(e===P0||e.startsWith(P0+"/"))?e.slice(P0.length)||"/":e}function M0(e){return P0&&e.startsWith("/")&&e!==P0&&!e.startsWith(P0+"/")?P0+e:e}function k0(e){const[t]=e.split("?"),n=B0(t).split("/").filter(Boolean);if(n.length>0&&Qf.includes(n[0])){const o=n.slice(1).join("/");return o?\\`/\\${o}\\`:"/"}return B0(t)||"/"}function C0(e){return/^[a-zA-Z][a-zA-Z\\d+\\-.]*:/.test(e)}function j0(){return typeof navigator>"u"?!1:navigator.connection?.saveData===!0}function yn(e,t){if(!t||C0(t)||t.startsWith("#"))return t;if(t.startsWith("?"))return M0(\\`/\\${e}/\\${t}\\`.replace("/?","?"));if(!t.startsWith("/"))return t;t=B0(t);const n=\\`/\\${e}\\`,o=t===n||t.startsWith(\\`\\${n}/\\`)?t:t==="/"?n:\\`\\${n}\\${t}\\`;return M0(o)}function I0(e){if(typeof e=="string")return e;const t=k0(e.href);return yn(e.locale,t)}`;
+          const routePatchReplacement = [
+            'const P0=', JSON.stringify(base),
+            ';function B0(e){return P0&&(e===P0||e.startsWith(P0+"/"))?e.slice(P0.length)||"/":e}',
+            'function M0(e){return P0&&e.startsWith("/")&&e!==P0&&!e.startsWith(P0+"/")?P0+e:e}',
+            'function k0(e){const[t]=e.split("?"),n=B0(t).split("/").filter(Boolean);if(n.length>0&&Qf.includes(n[0])){const o=n.slice(1).join("/");return o?`/${o}`:"/"}return B0(t)||"/"}',
+            'function C0(e){return/^[a-zA-Z][a-zA-Z\\d+\\-.]*:/.test(e)}',
+            'function j0(){return typeof navigator>"u"?!1:navigator.connection?.saveData===!0}',
+            'function yn(e,t){if(!t||C0(t)||t.startsWith("#"))return t;if(t.startsWith("?"))return M0(`/${e}/${t}`.replace("/?","?"));if(!t.startsWith("/"))return t;t=B0(t);const n=`/${e}`,o=t===n||t.startsWith(`${n}/`)?t:t==="/"?n:`${n}${t}`;return M0(o)}',
+            'function I0(e){if(typeof e=="string")return e;const t=k0(e.href);return yn(e.locale,t)}',
+          ].join('');
           for (const file of walk(root).filter((item) => item.endsWith('.js'))) {
             const before = fs.readFileSync(file, 'utf8');
             let after = before;
