@@ -108,6 +108,21 @@ jobs:
             }
           }
 
+          const routePatchReplacement = `const P0=${JSON.stringify(base)};function B0(e){return P0&&(e===P0||e.startsWith(P0+"/"))?e.slice(P0.length)||"/":e}function M0(e){return P0&&e.startsWith("/")&&e!==P0&&!e.startsWith(P0+"/")?P0+e:e}function k0(e){const[t]=e.split("?"),n=B0(t).split("/").filter(Boolean);if(n.length>0&&Qf.includes(n[0])){const o=n.slice(1).join("/");return o?\\`/\\${o}\\`:"/"}return B0(t)||"/"}function C0(e){return/^[a-zA-Z][a-zA-Z\\d+\\-.]*:/.test(e)}function j0(){return typeof navigator>"u"?!1:navigator.connection?.saveData===!0}function yn(e,t){if(!t||C0(t)||t.startsWith("#"))return t;if(t.startsWith("?"))return M0(\\`/\\${e}/\\${t}\\`.replace("/?","?"));if(!t.startsWith("/"))return t;t=B0(t);const n=\\`/\\${e}\\`,o=t===n||t.startsWith(\\`\\${n}/\\`)?t:t==="/"?n:\\`\\${n}\\${t}\\`;return M0(o)}function I0(e){if(typeof e=="string")return e;const t=k0(e.href);return yn(e.locale,t)}`;
+          for (const file of walk(root).filter((item) => item.endsWith('.js'))) {
+            const before = fs.readFileSync(file, 'utf8');
+            let after = before;
+            const routeStart = after.indexOf('function k0(e){');
+            const routeEnd = routeStart === -1 ? -1 : after.indexOf('function em(){', routeStart);
+            if (routeStart !== -1 && routeEnd !== -1) {
+              after = `${after.slice(0, routeStart)}${routePatchReplacement}${after.slice(routeEnd)}`;
+            }
+            after = after.replace('const Lj=(function(){const t=typeof document<"u"&&document.createElement("link").relList;return t&&t.supports&&t.supports("modulepreload")?"modulepreload":"preload"})(),$j=function(e){return"/"+e}', `const Lj=(function(){const t=typeof document<"u"&&document.createElement("link").relList;return t&&t.supports&&t.supports("modulepreload")?"modulepreload":"preload"})(),$j=function(e){return${JSON.stringify(base + '/')}+e}`);
+            if (after !== before) {
+              fs.writeFileSync(file, after);
+            }
+          }
+
           const redirects = [
             ['en/zh-cn.html', `${base}/zh-cn/`],
             ['zh-cn/en.html', `${base}/en/`],
