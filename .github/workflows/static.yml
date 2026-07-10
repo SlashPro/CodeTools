@@ -107,6 +107,30 @@ jobs:
               fs.writeFileSync(file, after);
             }
           }
+
+          const redirects = [
+            ['en/zh-cn.html', `${base}/zh-cn/`],
+            ['zh-cn/en.html', `${base}/en/`],
+          ];
+          for (const [fileName, target] of redirects) {
+            const file = path.join(root, fileName);
+            fs.mkdirSync(path.dirname(file), { recursive: true });
+            fs.writeFileSync(
+              file,
+              `<!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <meta http-equiv="refresh" content="0; url=${target}">
+              <title>Redirecting...</title>
+              <script>location.replace(${JSON.stringify(target)});</script>
+            </head>
+            <body><a href="${target}">Redirecting...</a></body>
+          </html>
+          `,
+            );
+          }
           NODE
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
